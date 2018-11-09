@@ -3,15 +3,8 @@
 
 using namespace std;
 
-// Functions prototypes
-void multiplyMatrices(int**, int**, int, int, int, int);
-void deleteMatrix(int**, int);
-
 // Matrix class
 class Matrix {
-	private:
-		// Properties
-		int init = false; // Flag to indicate is matrix initialized
 	public:
 		// Class constructor
 		Matrix(int rowsVal, int columnsVal) {
@@ -24,6 +17,7 @@ class Matrix {
 		int rows = 0; // Rows of the matrix
 		int columns = 0; // Columns of the matrix
 		int** matrix; // Array for matrix elements
+		int init = false; // Flag to indicate is matrix initialized
 
 		// Methods
 	    void initMatrix() { // Function that initializes new matrix dynamically
@@ -75,6 +69,35 @@ class Matrix {
 			}
 			delete [] matrix;
 	    }
+
+	    void multiplyOnMatrix(Matrix matrix1) {
+
+	    	int rowsResult = rows, columnsResult = matrix1.columns;
+
+	    	if (columns != matrix1.rows) { // Matrices can't be multiplied
+				cout << "Error: columns of the 1st matrix and rows of the second matrix should be equal." << endl;
+			} else { // Everything is ok
+				// Initialize result matrix
+				Matrix matrixResult(rowsResult, columnsResult);
+
+				// Matrix multiplication
+				for (int i = 0; i < matrixResult.rows; i++) {
+					for (int j = 0; j < matrixResult.columns; j++) {
+
+						matrixResult.matrix[i][j] = 0;
+
+						for (int k = 0; k < columns; k++) {
+							matrixResult.matrix[i][j] += matrix[i][k] * matrix1.matrix[k][j];
+						}
+					}
+				}
+
+				// Output result matrix
+				cout << endl << "Result matrix:" << endl;
+				matrixResult.outputMatrix();
+				matrixResult.deleteMatrix();
+			}
+	    }
 };
 
 // Main function
@@ -108,54 +131,7 @@ int main() {
     cout << endl << "Matrix 2:" << endl;
     matrix2.outputMatrix();
 
-   /* // Multiply the 1st and the 2nd matrices
-    multiplyMatrices(matrix1, matrix2, rows1, columns1, rows2, columns2);
-
-    // Delete matrices from memory
-    deleteMatrix(matrix1, rows1);
-    deleteMatrix(matrix2, rows2);*/
+    matrix1.multiplyOnMatrix(matrix2);
 
     return 0;
 }
-
-// Functions
-/*void multiplyMatrices(int** matrix1, int** matrix2, int rows1, int columns1, int rows2, int columns2) { // Function that multiplies matrices
-	if (columns1 != rows2) { // Matrices can't be multiplied
-		cout << "Error: columns of the 1st matrix and rows of the second matrix should be equal." << endl;
-	} else { // Everything is ok
-		// Initialize result matrix
-		int rowsResult = rows1;
-		int columnsResult = columns2;
-		int** matrixResult = new int* [rowsResult];
-
-		for (int i = 0; i < rowsResult; i++) {
-			matrixResult[i] = new int [columnsResult];
-		}
-
-		// Matrix multiplication
-		for (int i = 0; i < rowsResult; i++) {
-			for (int j = 0; j < columnsResult; j++) {
-
-				matrixResult[i][j] = 0;
-
-				for (int k = 0; k < columns1; k++) {
-					matrixResult[i][j] += matrix1[i][k] * matrix2[k][j];
-				}
-			}
-		}
-
-		// Output result matrix
-		cout << endl << "Result matrix:" << endl;
-		outputMatrix(matrixResult, rowsResult, columnsResult);
-		deleteMatrix(matrixResult, rowsResult);
-	}
-}*/
-
-
-/*void deleteMatrix(int** matrix, int rows) { // Function that deletes matrix from memory
-
-	for (int i = 0; i < rows; i++) {
-		delete [] matrix[i];
-	}
-	delete [] matrix;
-}*/
