@@ -87,6 +87,7 @@ void multiplyMatrices(int** matrix1, int** matrix2, int rows1, int columns1, int
 		// Output result matrix
 		cout << endl << "Result matrix:" << endl;
 		outputMatrix(matrixResult, rowsResult, columnsResult);
+		deleteMatrix(matrixResult, rowsResult);
 	}
 }
 
