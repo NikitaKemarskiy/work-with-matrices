@@ -6,18 +6,26 @@ using namespace std;
 // Matrix class
 class Matrix {
 	public:
-		// Class constructor
+		// Constructor
 		Matrix(int rowsVal, int columnsVal) {
 			rows = rowsVal;
 			columns = columnsVal;
 			initMatrix();
 		}
 
+		// Destructor
+		~Matrix() {
+			if (init) {
+				deleteMatrix();
+			}
+			cout << "Destructor was called" << endl;
+		}
+
 		// Properties
 		int rows = 0; // Rows of the matrix
 		int columns = 0; // Columns of the matrix
 		int** matrix; // Array for matrix elements
-		int init = false; // Flag to indicate is matrix initialized
+		bool init = false; // Flag to indicate is matrix initialized
 
 		// Methods
 	    void initMatrix() { // Function that initializes new matrix dynamically
@@ -70,11 +78,11 @@ class Matrix {
 			delete [] matrix;
 	    }
 
-	    void multiplyOnMatrix(Matrix matrix1) {
+	    Matrix multiplyOnMatrix(Matrix matrix1) {
 
 	    	int rowsResult = rows, columnsResult = matrix1.columns;
 
-	    	if (columns != matrix1.rows) { // Matrices can't be multiplied
+	    	if (columns != matrix1.rows) { // Error: matrices can't be multiplied
 				cout << "Error: columns of the 1st matrix and rows of the second matrix should be equal." << endl;
 			} else { // Everything is ok
 				// Initialize result matrix
@@ -92,10 +100,7 @@ class Matrix {
 					}
 				}
 
-				// Output result matrix
-				cout << endl << "Result matrix:" << endl;
-				matrixResult.outputMatrix();
-				matrixResult.deleteMatrix();
+				return matrixResult;
 			}
 	    }
 };
@@ -131,7 +136,9 @@ int main() {
     cout << endl << "Matrix 2:" << endl;
     matrix2.outputMatrix();
 
-    matrix1.multiplyOnMatrix(matrix2);
+    Matrix matrix3 = matrix1.multiplyOnMatrix(matrix2);
+    cout << endl << "Multiplied matrix:" << endl;
+    matrix3.outputMatrix();
 
     return 0;
 }
