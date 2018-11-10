@@ -14,12 +14,12 @@ class Matrix {
 		}
 
 		// Destructor
-		~Matrix() {
+		/*~Matrix() {
 			if (init) {
 				deleteMatrix();
 			}
 			cout << "Destructor was called" << endl;
-		}
+		}*/
 
 		// Properties
 		int rows = 0; // Rows of the matrix
@@ -139,6 +139,10 @@ int main() {
     Matrix matrix3 = matrix1.multiplyOnMatrix(matrix2);
     cout << endl << "Multiplied matrix:" << endl;
     matrix3.outputMatrix();
+
+    matrix1.deleteMatrix();
+    matrix2.deleteMatrix();
+    matrix3.deleteMatrix();
 
     return 0;
 }
