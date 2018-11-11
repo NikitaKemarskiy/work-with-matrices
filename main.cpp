@@ -13,14 +13,6 @@ class Matrix {
 			initMatrix();
 		}
 
-		// Destructor
-		/*~Matrix() {
-			if (init) {
-				deleteMatrix();
-			}
-			cout << "Destructor was called" << endl;
-		}*/
-
 		// Properties
 		int rows = 0; // Rows of the matrix
 		int columns = 0; // Columns of the matrix
@@ -103,12 +95,68 @@ class Matrix {
 				return matrixResult;
 			}
 	    }
+
+	    Matrix getMinorMatrix(int row, int column) {
+	    	if (row > rows || column > columns || row < 1 || column < 1) { // Error: minor matrix can't be found
+	    		cout << "Error: minor matrix can't be found" << endl;
+	    	} else if (rows != columns) { // Error: minor matrix can't be found
+	    		cout << "Error: minor matrix can't be found" << endl;
+	    	} else { // Everything is ok
+	    		Matrix minorMatrix(rows - 1, columns - 1);
+
+	    		int rowsIndex = 0, columnsIndex = 0;
+
+	    		for (int i = 0; i < rows; i++) {
+	    			if (i != (row - 1)) {
+	    				for (int j = 0; j < columns; j++) {
+	    					if (j != (column - 1)) {
+	    						minorMatrix.matrix[rowsIndex][columnsIndex] = matrix[i][j];
+	    						columnsIndex++;
+	    					}
+	    				}
+	    				rowsIndex++;
+	    				columnsIndex = 0;
+	    			}
+	    		}
+
+	    		return minorMatrix;
+	    	}
+		}
+
+	    int getDeterminant() {
+	    	int column = 0, determinant = 0;
+	    	
+	    	if (rows != columns) {
+	    		cout << "Error: determinant can't be found, matrix number of rows and columns should be the same" << endl;
+	    		return 0;
+	    	}
+
+	    	if (rows == 1 && columns == 1) {
+	    		return matrix[0][0];
+	    	}
+
+	    	Matrix minorMatrix(rows - 1, columns - 1);
+	    	minorMatrix.deleteMatrix();
+
+	    	for (int i = 0; i < rows; i++) {
+	    		minorMatrix = getMinorMatrix(i + 1, column + 1);
+	    		if (i % 2) {
+	    			determinant += matrix[i][column] * minorMatrix.getDeterminant() * (-1); 
+	    		} else {
+	    			determinant += matrix[i][column] * minorMatrix.getDeterminant(); 
+	    		}
+	    		minorMatrix.deleteMatrix();
+	    	}
+
+	    	return determinant;
+	    }
 };
 
 // Main function
 int main() {
 
-	int rows1 = 0, columns1 = 0, rows2 = 0, columns2 = 0;
+	// Multiplication
+	/*int rows1 = 0, columns1 = 0, rows2 = 0, columns2 = 0;
 
     // Input the number of rows and columns of two matrices
     cout << "Rows of the 1st matrix: ";
@@ -142,7 +190,24 @@ int main() {
 
     matrix1.deleteMatrix();
     matrix2.deleteMatrix();
-    matrix3.deleteMatrix();
+    matrix3.deleteMatrix();*/
+
+    // Determinant
+    int rows = 0, columns = 0;
+
+    cout << "Rows: ";
+    cin >> rows;
+    cout << "Columns: ";
+    cin >> columns;
+
+    Matrix matrix(rows, columns);
+    matrix.inputMatrix();
+    matrix.outputMatrix();
+    
+    int determinant = matrix.getDeterminant();
+    cout << determinant << endl;
+
+    matrix.deleteMatrix();
 
     return 0;
 }
