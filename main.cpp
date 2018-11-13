@@ -21,6 +21,7 @@ class Matrix {
 
 		// Methods
 	    void initMatrix() { // Function that initializes new matrix dynamically
+
 	      if (rows > 0 && columns > 0) {
 	        if (!init) {
 	        	init = true;
@@ -37,6 +38,7 @@ class Matrix {
 	    }
 
 	    void inputMatrix() { // Function that allows you to input matrix elements from keyboard
+
 	      if (init) {
 	        for (int i = 0; i < rows; i++) {
 	          for (int j = 0; j < columns; j++) {
@@ -50,6 +52,7 @@ class Matrix {
 	    }
 
 	    void outputMatrix() { // Function that outputs the matrix
+
 	      if (init) {
 	      	cout << endl;
 	        for (int i = 0; i < rows; i++) {
@@ -57,7 +60,8 @@ class Matrix {
 				      cout << setw(10) << right << matrix[i][j] << " | ";
 			      }
 			      cout << endl;
-		      }
+		    }
+		    cout << endl;
 	      } else {
 	        cout << "Error: matrix should be initialized" << endl;
 	      }
@@ -70,7 +74,7 @@ class Matrix {
 			delete [] matrix;
 	    }
 
-	    Matrix multiplyOnMatrix(Matrix matrix1) {
+	    Matrix multiplyOnMatrix(Matrix matrix1) { // Function that multiplies current matrix on another matrix
 
 	    	int rowsResult = rows, columnsResult = matrix1.columns;
 
@@ -96,7 +100,12 @@ class Matrix {
 			}
 	    }
 
-	    Matrix getMinorMatrix(int row, int column) {
+	    Matrix getInverseMatrix() {
+	    	//...
+	    }
+
+	    Matrix getMinorMatrix(int row, int column) { // Function that allows you to get any minor matrix of the current full matrix
+
 	    	if (row > rows || column > columns || row < 1 || column < 1) { // Error: minor matrix can't be found
 	    		cout << "Error: minor matrix can't be found" << endl;
 	    	} else if (rows != columns) { // Error: minor matrix can't be found
@@ -122,8 +131,65 @@ class Matrix {
 	    		return minorMatrix;
 	    	}
 		}
+		
+		int getRank() { // Function that allows you to get the rank of the current matrix
 
-	    int getDeterminant() {
+	    	int rowsIndex = 0, columnsIndex = 0;
+	    	int currentRow = 0, currentColumn = 0;
+	    	int determinant = 0, k = 0;
+
+	    	if (rows < columns) {
+	    		k = rows;
+	    	} else {
+	    		k = columns;
+	    	}
+
+	    	Matrix minorMatrix(k, k);
+
+
+	    	while (k > 0) {
+		    	// Getting minor matrix
+		    	for (int i = currentRow; i < currentRow + k; i++) {
+		    		for (int j = currentColumn; j < currentColumn + k; j++) {
+		    			minorMatrix.matrix[rowsIndex][columnsIndex] = matrix[i][j];
+		    			columnsIndex++;
+		    		}
+		    		rowsIndex++;
+		    		columnsIndex = 0;
+		    	}
+
+		    	determinant = minorMatrix.getDeterminant();
+		    	rowsIndex = 0;
+		    	columnsIndex = 0;
+
+		    	// Determinant > 0 -> rank was found
+		    	if (determinant != 0) {
+		    		break;
+		    	}
+		    	// If we found all the minor matrices and all their determinants were 0 -> decrease k
+		    	if ((currentRow + k) == rows && (currentColumn + k) == columns) {
+		    		currentRow = 0;
+		    		currentColumn = 0;
+		    		k--;
+		    		if (k > 0) { // If k is greater than 0 -> it was not the last iteration
+		    			// Manage minor matrix size fields and memory
+			    		minorMatrix.rows = k;
+			    		minorMatrix.columns = k;
+			    		minorMatrix.initMatrix();
+		    		} 
+		    	} else if ((currentColumn + k) == columns) { // If we came to the end of the column -> go to the next row
+		    		currentRow++;
+		    		currentColumn = 0;
+		    	} else {
+		    		currentColumn++;
+		    	}
+		    }
+
+		    return k;
+	    }
+
+	    int getDeterminant() { // Function that allows you to get the determinant of the current matrix
+
 	    	int column = 0, determinant = 0;
 	    	
 	    	if (rows != columns) {
@@ -192,7 +258,7 @@ int main() {
     matrix2.deleteMatrix();
     matrix3.deleteMatrix();*/
 
-    // Determinant
+    // Determinant, rank
     int rows = 0, columns = 0;
 
     cout << "Rows: ";
@@ -205,7 +271,9 @@ int main() {
     matrix.outputMatrix();
     
     int determinant = matrix.getDeterminant();
-    cout << determinant << endl;
+    cout << "Determinant: " << determinant << endl;
+    int rank = matrix.getRank();
+    cout << "Rank: " << rank << endl;
 
     matrix.deleteMatrix();
 
