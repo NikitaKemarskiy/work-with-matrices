@@ -16,62 +16,75 @@ class Matrix {
 		// Properties
 		int rows = 0; // Rows of the matrix
 		int columns = 0; // Columns of the matrix
-		int** matrix; // Array for matrix elements
+		double** matrix; // Array for matrix elements
 		bool init = false; // Flag to indicate is matrix initialized
 
 		// Methods
 	    void initMatrix() { // Function that initializes new matrix dynamically
 
-	      if (rows > 0 && columns > 0) {
-	        if (!init) {
-	        	init = true;
-	    	} else {
-	    		deleteMatrix();
-	    	}
-	        matrix = new int* [rows];
-	        for (int i = 0; i < rows; i++) {
-	    	    matrix[i] = new int [columns];
-	        }
-	      } else {
-	        cout << "Error: Invalid rows or columns value" << endl;
-	      }
+			if (rows > 0 && columns > 0) {
+				if (!init) {
+					init = true;
+				} else {
+					deleteMatrix();
+				}
+				matrix = new double* [rows];
+				for (int i = 0; i < rows; i++) {
+				    matrix[i] = new double [columns];
+				}
+			} else {
+				cout << "Error: Invalid rows or columns value" << endl;
+			}
 	    }
 
 	    void inputMatrix() { // Function that allows you to input matrix elements from keyboard
 
-	      if (init) {
-	        for (int i = 0; i < rows; i++) {
-	          for (int j = 0; j < columns; j++) {
-	            cout << "Input element of row " << i + 1 << " and column " << j + 1 << " : ";
-	            cin >> matrix[i][j];
-	          }
-	        }
-	      } else {
-	        cout << "Error: matrix should be initialized" << endl;
-	      }
+			if (init) {
+				for (int i = 0; i < rows; i++) {
+					for (int j = 0; j < columns; j++) {
+						cout << "Input element of row " << i + 1 << " and column " << j + 1 << " : ";
+						cin >> matrix[i][j];
+					}
+				}
+			} else {
+				cout << "Error: matrix should be initialized" << endl;
+			}
 	    }
 
 	    void outputMatrix() { // Function that outputs the matrix
 
-	      if (init) {
-	      	cout << endl;
-	        for (int i = 0; i < rows; i++) {
-			      for (int j = 0; j < columns; j++) {
-				      cout << setw(10) << right << matrix[i][j] << " | ";
-			      }
-			      cout << endl;
-		    }
-		    cout << endl;
-	      } else {
-	        cout << "Error: matrix should be initialized" << endl;
-	      }
+			if (init) {
+				cout << endl;
+				for (int i = 0; i < rows; i++) {
+				      for (int j = 0; j < columns; j++) {
+					      cout << setw(10) << right << matrix[i][j] << " | ";
+				      }
+				      cout << endl;
+				}
+				cout << endl;
+			} else {
+				cout << "Error: matrix should be initialized" << endl;
+			}
 	    }
 
 	    void deleteMatrix() { // Function that deletes matrix elements from memory
+
 	    	for (int i = 0; i < rows; i++) {
 				delete [] matrix[i];
 			}
 			delete [] matrix;
+	    }
+
+	    Matrix getTransposedMatrix() {
+
+	   		Matrix transposedMatrix(columns, rows);
+	   		for (int i = 0; i < rows; i++) {
+	   			for (int j = 0; j < columns; j++) {
+	   				transposedMatrix.matrix[j][i] = matrix[i][j];
+	   			}
+	   		}
+
+	   		return transposedMatrix;
 	    }
 
 	    Matrix multiplyOnMatrix(Matrix matrix1) { // Function that multiplies current matrix on another matrix
@@ -87,7 +100,6 @@ class Matrix {
 				// Matrix multiplication
 				for (int i = 0; i < matrixResult.rows; i++) {
 					for (int j = 0; j < matrixResult.columns; j++) {
-
 						matrixResult.matrix[i][j] = 0;
 
 						for (int k = 0; k < columns; k++) {
@@ -100,8 +112,32 @@ class Matrix {
 			}
 	    }
 
-	    Matrix getInverseMatrix() {
-	    	//...
+	    Matrix getInverseMatrix() { // Function that finds an inverse matrix of the current matrix
+	    	
+	    	if (rows != columns) {
+	    		cout << "Error: inverse matrix can't be found -> matrix should have a determinant" << endl;
+	    	} else {
+	    		double determinant = 0, minor = 0;
+	    		determinant = getDeterminant();
+	    		Matrix inverseMatrix(rows, columns);
+	    		Matrix minorMatrix(rows - 1, columns - 1);
+	    		minorMatrix.deleteMatrix();
+
+	    		for (int i = 0; i < rows; i++) {
+	    			for (int j = 0; j < columns; j++) {
+	    				minorMatrix = getMinorMatrix(i + 1, j + 1);
+	    				minor = minorMatrix.getDeterminant();
+	    				if ((i + j) % 2) {
+	    					minor *= (-1);
+	    				}
+	    				inverseMatrix.matrix[i][j] = minor / determinant;
+	    				minorMatrix.deleteMatrix();
+	    			}
+	    		}
+	    		Matrix inverseMatrixTransposed = inverseMatrix.getTransposedMatrix();
+	    		inverseMatrix.deleteMatrix();
+	    		return inverseMatrixTransposed;
+	    	}
 	    }
 
 	    Matrix getMinorMatrix(int row, int column) { // Function that allows you to get any minor matrix of the current full matrix
@@ -109,7 +145,7 @@ class Matrix {
 	    	if (row > rows || column > columns || row < 1 || column < 1) { // Error: minor matrix can't be found
 	    		cout << "Error: minor matrix can't be found" << endl;
 	    	} else if (rows != columns) { // Error: minor matrix can't be found
-	    		cout << "Error: minor matrix can't be found" << endl;
+	    		cout << "Error: minor matrix can't be found -> matrix should have a determinant" << endl;
 	    	} else { // Everything is ok
 	    		Matrix minorMatrix(rows - 1, columns - 1);
 
@@ -136,7 +172,8 @@ class Matrix {
 
 	    	int rowsIndex = 0, columnsIndex = 0;
 	    	int currentRow = 0, currentColumn = 0;
-	    	int determinant = 0, k = 0;
+	    	int k = 0;
+	    	double determinant = 0;
 
 	    	if (rows < columns) {
 	    		k = rows;
@@ -188,9 +225,10 @@ class Matrix {
 		    return k;
 	    }
 
-	    int getDeterminant() { // Function that allows you to get the determinant of the current matrix
+	    double getDeterminant() { // Function that allows you to get the determinant of the current matrix
 
-	    	int column = 0, determinant = 0;
+	    	int column = 0;
+	    	double determinant = 0;
 	    	
 	    	if (rows != columns) {
 	    		cout << "Error: determinant can't be found, matrix number of rows and columns should be the same" << endl;
@@ -258,7 +296,7 @@ int main() {
     matrix2.deleteMatrix();
     matrix3.deleteMatrix();*/
 
-    // Determinant, rank
+    // Determinant, rank, inverse matrix
     int rows = 0, columns = 0;
 
     cout << "Rows: ";
@@ -270,12 +308,15 @@ int main() {
     matrix.inputMatrix();
     matrix.outputMatrix();
     
-    int determinant = matrix.getDeterminant();
+    double determinant = matrix.getDeterminant();
     cout << "Determinant: " << determinant << endl;
     int rank = matrix.getRank();
     cout << "Rank: " << rank << endl;
+    Matrix inverseMatrix = matrix.getInverseMatrix();
+    inverseMatrix.outputMatrix();
 
     matrix.deleteMatrix();
+    inverseMatrix.deleteMatrix();
 
     return 0;
 }
