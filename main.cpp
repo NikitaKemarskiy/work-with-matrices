@@ -119,7 +119,7 @@ class Matrix {
 	    	} else {
 	    		double determinant = 0, minor = 0;
 	    		determinant = getDeterminant();
-	    		Matrix inverseMatrix(rows, columns);
+	    		Matrix inverseMatrix(columns, rows);
 	    		Matrix minorMatrix(rows - 1, columns - 1);
 	    		minorMatrix.deleteMatrix();
 
@@ -130,13 +130,11 @@ class Matrix {
 	    				if ((i + j) % 2) {
 	    					minor *= (-1);
 	    				}
-	    				inverseMatrix.matrix[i][j] = minor / determinant;
+	    				inverseMatrix.matrix[j][i] = minor / determinant;
 	    				minorMatrix.deleteMatrix();
 	    			}
 	    		}
-	    		Matrix inverseMatrixTransposed = inverseMatrix.getTransposedMatrix();
-	    		inverseMatrix.deleteMatrix();
-	    		return inverseMatrixTransposed;
+	    		return inverseMatrix;
 	    	}
 	    }
 
