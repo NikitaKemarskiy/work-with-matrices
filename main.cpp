@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <vector>
 
 using namespace std;
 
@@ -16,7 +17,7 @@ class Matrix {
 		// Properties
 		int rows = 0; // Rows of the matrix
 		int columns = 0; // Columns of the matrix
-		double** matrix; // Array for matrix elements
+		vector<vector<double>> matrix; // Array for matrix elements
 		bool init = false; // Flag to indicate is matrix initialized
 
 		// Methods
@@ -25,12 +26,10 @@ class Matrix {
 			if (rows > 0 && columns > 0) {
 				if (!init) {
 					init = true;
-				} else {
-					deleteMatrix();
 				}
-				matrix = new double* [rows];
+				matrix.resize(rows);
 				for (int i = 0; i < rows; i++) {
-				    matrix[i] = new double [columns];
+					matrix[i] = vector<double> (columns);
 				}
 			} else {
 				cout << "Error: Invalid rows or columns value" << endl;
@@ -65,14 +64,6 @@ class Matrix {
 			} else {
 				cout << "Error: matrix should be initialized" << endl;
 			}
-	    }
-
-	    void deleteMatrix() { // Function that deletes matrix elements from memory
-
-	    	for (int i = 0; i < rows; i++) {
-				delete [] matrix[i];
-			}
-			delete [] matrix;
 	    }
 
 	    Matrix getTransposedMatrix() {
@@ -113,7 +104,7 @@ class Matrix {
 	    }
 
 	    Matrix getInverseMatrix() { // Function that finds an inverse matrix of the current matrix
-	    	
+
 	    	if (rows != columns) {
 	    		cout << "Error: inverse matrix can't be found -> matrix should have a determinant" << endl;
 	    	} else {
@@ -121,7 +112,6 @@ class Matrix {
 	    		determinant = getDeterminant();
 	    		Matrix inverseMatrix(columns, rows);
 	    		Matrix minorMatrix(rows - 1, columns - 1);
-	    		minorMatrix.deleteMatrix();
 
 	    		for (int i = 0; i < rows; i++) {
 	    			for (int j = 0; j < columns; j++) {
@@ -131,7 +121,6 @@ class Matrix {
 	    					minor *= (-1);
 	    				}
 	    				inverseMatrix.matrix[j][i] = minor / determinant;
-	    				minorMatrix.deleteMatrix();
 	    			}
 	    		}
 	    		return inverseMatrix;
@@ -165,7 +154,7 @@ class Matrix {
 	    		return minorMatrix;
 	    	}
 		}
-		
+
 		int getRank() { // Function that allows you to get the rank of the current matrix
 
 	    	int rowsIndex = 0, columnsIndex = 0;
@@ -211,7 +200,7 @@ class Matrix {
 			    		minorMatrix.rows = k;
 			    		minorMatrix.columns = k;
 			    		minorMatrix.initMatrix();
-		    		} 
+		    		}
 		    	} else if ((currentColumn + k) == columns) { // If we came to the end of the column -> go to the next row
 		    		currentRow++;
 		    		currentColumn = 0;
@@ -227,7 +216,7 @@ class Matrix {
 
 	    	int column = 0;
 	    	double determinant = 0;
-	    	
+
 	    	if (rows != columns) {
 	    		cout << "Error: determinant can't be found, matrix number of rows and columns should be the same" << endl;
 	    		return 0;
@@ -238,16 +227,14 @@ class Matrix {
 	    	}
 
 	    	Matrix minorMatrix(rows - 1, columns - 1);
-	    	minorMatrix.deleteMatrix();
 
 	    	for (int i = 0; i < rows; i++) {
 	    		minorMatrix = getMinorMatrix(i + 1, column + 1);
 	    		if (i % 2) {
-	    			determinant += matrix[i][column] * minorMatrix.getDeterminant() * (-1); 
+	    			determinant += matrix[i][column] * minorMatrix.getDeterminant() * (-1);
 	    		} else {
-	    			determinant += matrix[i][column] * minorMatrix.getDeterminant(); 
+	    			determinant += matrix[i][column] * minorMatrix.getDeterminant();
 	    		}
-	    		minorMatrix.deleteMatrix();
 	    	}
 
 	    	return determinant;
@@ -258,7 +245,7 @@ class Matrix {
 int main() {
 
 	// Multiplication
-	/*int rows1 = 0, columns1 = 0, rows2 = 0, columns2 = 0;
+	int rows1 = 0, columns1 = 0, rows2 = 0, columns2 = 0;
 
     // Input the number of rows and columns of two matrices
     cout << "Rows of the 1st matrix: ";
@@ -290,12 +277,8 @@ int main() {
     cout << endl << "Multiplied matrix:" << endl;
     matrix3.outputMatrix();
 
-    matrix1.deleteMatrix();
-    matrix2.deleteMatrix();
-    matrix3.deleteMatrix();*/
-
     // Determinant, rank, inverse matrix
-    int rows = 0, columns = 0;
+    /*int rows = 0, columns = 0;
 
     cout << "Rows: ";
     cin >> rows;
@@ -305,16 +288,13 @@ int main() {
     Matrix matrix(rows, columns);
     matrix.inputMatrix();
     matrix.outputMatrix();
-    
+
     double determinant = matrix.getDeterminant();
     cout << "Determinant: " << determinant << endl;
     int rank = matrix.getRank();
     cout << "Rank: " << rank << endl;
     Matrix inverseMatrix = matrix.getInverseMatrix();
-    inverseMatrix.outputMatrix();
-
-    matrix.deleteMatrix();
-    inverseMatrix.deleteMatrix();
+    inverseMatrix.outputMatrix();*/
 
     return 0;
 }
