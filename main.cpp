@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#define TAB '\t'
 
 using namespace std;
 
@@ -241,60 +242,193 @@ class Matrix {
 	    }
 };
 
+// Prototypes
+void outputMenu(string*, int);
+void execOption(int);
+
 // Main function
 int main() {
+	// Selection menu
+	int option;
+	char ch = 'a';
+	string* options = new string[6];
+	options[0] = "Transpose matrix";
+	options[1] = "Multiply two matrices";
+	options[2] = "Get inverse matrix";
+	options[3] = "Get minor matrix";
+	options[4] = "Get rank";
+	options[5] = "Get determinant";
 
-	// Multiplication
-	int rows1 = 0, columns1 = 0, rows2 = 0, columns2 = 0;
-
-    // Input the number of rows and columns of two matrices
-    cout << "Rows of the 1st matrix: ";
-    cin >> rows1;
-    cout << "Columns of the 1st matrix: ";
-    cin >> columns1;
-    cout << "Rows of the 2nd matrix: ";
-    cin >> rows2;
-    cout << "Columns of the 2nd matrix: ";
-    cin >> columns2;
-
-    // Matrices
-    Matrix matrix1(rows1, columns1);
-    Matrix matrix2(rows2, columns2);
-
-    // Input matrix values
-    cout << endl << "Input the 1st matrix values: " << endl;
-    matrix1.inputMatrix();
-    cout << endl << "Input the 2nd matrix values: " << endl;
-    matrix2.inputMatrix();
-
-    // Test output
-    cout << endl << "Matrix 1:" << endl;
-    matrix1.outputMatrix();
-    cout << endl << "Matrix 2:" << endl;
-    matrix2.outputMatrix();
-
-    Matrix matrix3 = matrix1.multiplyOnMatrix(matrix2);
-    cout << endl << "Multiplied matrix:" << endl;
-    matrix3.outputMatrix();
-
-    // Determinant, rank, inverse matrix
-    /*int rows = 0, columns = 0;
-
-    cout << "Rows: ";
-    cin >> rows;
-    cout << "Columns: ";
-    cin >> columns;
-
-    Matrix matrix(rows, columns);
-    matrix.inputMatrix();
-    matrix.outputMatrix();
-
-    double determinant = matrix.getDeterminant();
-    cout << "Determinant: " << determinant << endl;
-    int rank = matrix.getRank();
-    cout << "Rank: " << rank << endl;
-    Matrix inverseMatrix = matrix.getInverseMatrix();
-    inverseMatrix.outputMatrix();*/
+	while (true) {
+		outputMenu(options, 6);
+		cin >> option;
+		execOption(option);
+		cout << endl << "Do you want to continue? (Y/N): ";
+		cin >> ch;
+		if (ch == 'Y' || ch == 'y') {
+			cout << endl;
+			continue;
+		} else {
+			break;
+		}
+	}
 
     return 0;
+}
+
+// Functions
+void outputMenu(string* strArr, int n) {
+	cout << "What you want to do?" << endl << endl;
+	for (int i = 0; i < n; i++) {
+    	cout << TAB << i + 1 << ") " << strArr[i] << endl;
+  	}
+  	cout << endl;
+}
+
+void execOption(int option) {
+	switch (option) {
+		// Transpose matrix
+		case 1: {
+			// Input variables
+			int rows = 0, columns = 0;
+			cout << "Rows: ";
+		    cin >> rows;
+		    cout << "Columns: ";
+		    cin >> columns;
+		    // Initialize matrix
+		    Matrix matrix(rows, columns);
+   			matrix.inputMatrix();
+   			matrix.outputMatrix();
+   			// Get transposed matrix
+   			Matrix transposedMatrix = matrix.getTransposedMatrix();
+   			transposedMatrix.outputMatrix();
+		} break;
+
+		// Multiply two matrices
+		case 2: {
+			// Input variables
+			int rows1 = 0, columns1 = 0, rows2 = 0, columns2 = 0;
+		    cout << "Rows of the 1st matrix: ";
+		    cin >> rows1;
+		    cout << "Columns of the 1st matrix: ";
+		    cin >> columns1;
+		    cout << "Rows of the 2nd matrix: ";
+		    cin >> rows2;
+		    cout << "Columns of the 2nd matrix: ";
+		    cin >> columns2;
+		    // Check if values are invalid
+		    if (columns1 != rows2) { // Invalid rows / columns values
+		    	cout << endl << "Error: columns of the 1st matrix and rows of the second matrix should be equal." << endl;
+		    }
+			else { // Everything is ok
+			    // Initialize matrices
+			    Matrix matrix1(rows1, columns1);
+			    Matrix matrix2(rows2, columns2);
+			    cout << endl << "Input the 1st matrix values: " << endl;
+			    matrix1.inputMatrix();
+			    cout << endl << "Input the 2nd matrix values: " << endl;
+			    matrix2.inputMatrix();
+			    cout << endl << "Matrix 1:" << endl;
+			    matrix1.outputMatrix();
+			    cout << endl << "Matrix 2:" << endl;
+			    matrix2.outputMatrix();
+			    // Get result matrix
+			    Matrix matrix3 = matrix1.multiplyOnMatrix(matrix2);
+			    cout << endl << "Multiplied matrix:" << endl;
+			    matrix3.outputMatrix();
+			}
+		} break;
+
+		// Get inverse matrix
+		case 3: {
+			// Input variables
+			int rows = 0, columns = 0;
+			cout << "Rows: ";
+		    cin >> rows;
+		    cout << "Columns: ";
+		    cin >> columns;
+		    if (rows != columns) { // Invalid rows / columns values
+		    	cout << endl << "Error: columns and rows of the matrix should be equal." << endl;
+		    } else {
+		    	// Initialize matrix
+			    Matrix matrix(rows, columns);
+	   			matrix.inputMatrix();
+	   			matrix.outputMatrix();
+	   			// Get inverse matrix
+	   			Matrix inverseMatrix = matrix.getInverseMatrix();
+	    		inverseMatrix.outputMatrix();
+		    }
+		} break;
+
+		// Get minor matrix
+		case 4: {
+			// Input variables
+			int rows = 0, columns = 0, minorRow = 0, minorColumn = 0;
+			cout << "Rows: ";
+		    cin >> rows;
+		    cout << "Columns: ";
+		    cin >> columns;
+		    cout << "Minor row: ";
+		    cin >> minorRow;
+		    cout << "Minor column: ";
+		    cin >> minorColumn;
+		    if (minorRow > rows || minorColumn > columns || minorRow < 1 || minorColumn < 1) { // Invalid minor row / column values
+		    	cout << endl << "Error: matrix should include minor column and row." << endl;
+		    } else if (rows != columns) { // Invalid rows / columns values
+		    	cout << endl << "Error: the number of columns and rows should be equal." << endl;
+		    } else {
+			    // Initialize matrix
+			    Matrix matrix(rows, columns);
+	   			matrix.inputMatrix();
+	   			matrix.outputMatrix();
+	   			// Get minor matrix
+	   			Matrix minorMatrix(rows - 1, columns - 1);
+	   			minorMatrix = matrix.getMinorMatrix(minorRow, minorColumn);
+	   			minorMatrix.outputMatrix();
+	   		}
+		} break;
+
+		// Get rank
+		case 5: {
+			// Input variables
+			int rows = 0, columns = 0;
+			cout << "Rows: ";
+		    cin >> rows;
+		    cout << "Columns: ";
+		    cin >> columns;
+		    // Initialize matrix
+		    Matrix matrix(rows, columns);
+   			matrix.inputMatrix();
+   			matrix.outputMatrix();
+   			// Get rank
+   			int rank = matrix.getRank();
+    		cout << "Rank: " << rank << endl;
+		} break;
+
+		// Get determinant
+		case 6: {
+			// Input variables
+			int rows = 0, columns = 0;
+			cout << "Rows: ";
+		    cin >> rows;
+		    cout << "Columns: ";
+		    cin >> columns;
+		    if (rows != columns) { // Invalid rows / columns values
+		    	cout << endl << "Error: the number of columns and rows should be equal." << endl;	
+		    } else {
+		    	// Initialize matrix
+			    Matrix matrix(rows, columns);
+	   			matrix.inputMatrix();
+	   			matrix.outputMatrix();
+	   			// Get determinant
+	   			double determinant = matrix.getDeterminant();
+	    		cout << "Determinant: " << determinant << endl;
+			}
+		} break;
+
+		// Wrong option
+		default: {
+			cout << "Wrong option. Please try again." << endl;
+		} break;
+	}
 }
